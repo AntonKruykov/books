@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+
+  runserver:
+    build: .
+    command: bash -c "python app.py"
+    volumes:
+      - .:/code
+    ports:
+      - "8080:8080"
