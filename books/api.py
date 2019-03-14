@@ -1,4 +1,5 @@
 from connexion import NoContent
+from sqlalchemy import and_, or_
 
 from books import orm
 
@@ -6,17 +7,22 @@ db_session = orm.init_db()
 
 
 def get_books(author=None, title=None, date_start=None, date_end=None):
-    q = db_session.query(orm.Book)
-    # todo: explore complicated queries building
-    # make q(author) OR q(title) OR q(date_start) AND q(date_end)
+
+    conditions = []
     if author:
-        q = q.filter(orm.Book.author.like('%{}%'.format(author)))
+        conditions.append(orm.Book.author.like('%{}%'.format(author)))
     if title:
-        q = q.filter(orm.Book.title.like('%{}%'.format(title)))
+        conditions.append(orm.Book.title.like('%{}%'.format(title)))
+
+    date_conditions = []
     if date_start:
-        q = q.filter(orm.Book.create_dt >= date_start)
+        date_conditions.append(orm.Book.create_dt >= date_start)
     if date_end:
-        q = q.filter(orm.Book.create_dt <= date_end)
+        date_conditions.append(orm.Book.create_dt <= date_end)
+
+    q = db_session.query(orm.Book)
+    q = q.filter(or_(or_(*conditions), and_(*date_conditions)))
+
     return [b.dump() for b in q]
 
 
