@@ -53,7 +53,7 @@ paths:
   /books/{id}:
     patch:
       operationId: books.api.edit_book
-      summary: Update a book fiels
+      summary: Update a book fields
       parameters:
         - $ref: '#/components/parameters/id'
       responses:
