@@ -1,7 +1,7 @@
 # Books
 For start project run
  
-`docker-compose up --build`
+`docker-compose up` or `docker-compose up --buid` for rebuild 
 
 
 Open [http://0.0.0.0:8080/ui/](http://0.0.0.0:8080/ui/) for Swagger UI page
