@@ -1,6 +1,6 @@
-openapi: 3.0.0
+openapi: 3.0.1
 info:
-  title: Books  Example
+  title: JSON API Books Example
   version: 1.0.0
 paths:
   /books:
@@ -9,23 +9,23 @@ paths:
       summary: List of all books |
         Available filter by title, author, create date
       parameters:
-      - name: author
+      - name: filter[author]
         in: query
         schema:
           type: string
           pattern: '^[\w\s.,]*$'
-      - name: title
+      - name: filter[title]
         in: query
         schema:
           type: string
           pattern: '^[\w\s.,]*$'
-      - name: date_start
+      - name: filter[date_start]
         in: query
         schema:
           type: string
           pattern: '^[\d-]*$'
           example: '2019-03-14'
-      - name: date_end
+      - name: filter[date_end]
         in: query
         schema:
           type: string
@@ -33,10 +33,9 @@ paths:
           example: '2019-03-20'
       responses:
         '200':
-          description: |-
-            Return books
+          description: OK
           content:
-            application/json:
+            application/vnd.api+json:
               schema:
                 $ref: '#/components/schemas/Books'
     post:
@@ -47,14 +46,14 @@ paths:
           description: New books created
       requestBody:
         content:
-          application/json:
+          application/vnd.api+json:
             schema:
               x-body-name: books
               $ref: '#/components/schemas/Books'
   /books/{id}:
-    put:
+    patch:
       operationId: books.api.edit_book
-      summary: Update a book
+      summary: Update a book fiels
       parameters:
         - $ref: '#/components/parameters/id'
       responses:
@@ -64,10 +63,13 @@ paths:
           description: Book does not exist
       requestBody:
         content:
-          application/json:
+          application/vnd.api+json:
             schema:
               x-body-name: book
-              $ref: '#/components/schemas/Book'
+              type: object
+              properties:
+                data:
+                  $ref: '#/components/schemas/Book'
 
     delete:
       operationId: books.api.delete_book
@@ -93,41 +95,52 @@ components:
     Book:
       type: object
       required:
-      - title
-      - author
+      - id
+      - type
       properties:
         id:
-          type: integer
+          type: string
           description: Unique identifier
           readOnly: true
           example: 1
-        title:
+        type:
           type: string
-          description: Books's title
-          minLength: 1
-          maxLength: 150
-          example: Selected stories
-        publish_year:
-          type: integer
-          description: Book's publish year
-          example: 1922
-        author:
-          type: string
-          description: Author
-          minLength: 1
-          maxLength: 150
-          example: O. Henry
-        pages_count:
-          type: integer
-          description: Count of pages in book
-          example: 464
-        create_dt:
-          type: string
-          format: date-time
-          description: Creation time
-          readOnly: true
-          example: '2019-03-14T15:49:51.230+03:00'
+          example: books
+        attributes:
+          type: object
+          properties:
+            title:
+              type: string
+              description: Books's title
+              minLength: 1
+              maxLength: 150
+              example: Selected stories
+            publish_year:
+              type: integer
+              description: Book's publish year
+              example: 1922
+            author:
+              type: string
+              description: Author
+              minLength: 1
+              maxLength: 150
+              example: O. Henry
+            pages_count:
+              type: integer
+              description: Count of pages in book
+              example: 464
+            create_dt:
+              type: string
+              format: date-time
+              description: Creation time
+              readOnly: true
+              example: '2019-03-14T15:49:51.230+03:00'
     Books:
-      type: array
-      items:
-        $ref: '#/components/schemas/Book'
+      required:
+        - data
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Book'
